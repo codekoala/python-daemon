@@ -59,8 +59,8 @@ class PIDLockFile(LinkFileLock, object):
         super(PIDLockFile, self).acquire(*args, **kwargs)
         try:
             write_pid_to_pidfile(self.path)
-        except OSError, exc:
-            error = LockFailed(u"%(exc)s" % vars())
+        except OSError as exc:
+            error = LockFailed("%(exc)s" % vars())
             raise error
 
     def release(self):
@@ -121,7 +121,7 @@ def read_pid_from_pidfile(pidfile_path):
     pidfile = None
     try:
         pidfile = open(pidfile_path, 'r')
-    except IOError, exc:
+    except IOError as exc:
         if exc.errno == errno.ENOENT:
             pass
         else:
@@ -143,7 +143,7 @@ def read_pid_from_pidfile(pidfile_path):
             pid = int(line)
         except ValueError:
             raise PIDFileParseError(
-                u"PID file %(pidfile_path)r contents invalid" % vars())
+                "PID file %(pidfile_path)r contents invalid" % vars())
         pidfile.close()
 
     return pid
@@ -172,7 +172,7 @@ def write_pid_to_pidfile(pidfile_path):
     #   would contain three characters: two, five, and newline.
 
     pid = os.getpid()
-    line = u"%(pid)d\n" % vars()
+    line = "%(pid)d\n" % vars()
     pidfile.write(line)
     pidfile.close()
 
@@ -187,7 +187,7 @@ def remove_existing_pidfile(pidfile_path):
         """
     try:
         os.remove(pidfile_path)
-    except OSError, exc:
+    except OSError as exc:
         if exc.errno == errno.ENOENT:
             pass
         else:

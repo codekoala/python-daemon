@@ -206,7 +206,7 @@ class DaemonContext(object):
     def __init__(
         self,
         chroot_directory=None,
-        working_directory=u'/',
+        working_directory='/',
         umask=0,
         uid=None,
         gid=None,
@@ -394,7 +394,7 @@ class DaemonContext(object):
 
             """
         exception = SystemExit(
-            u"Terminating on signal %(signal_number)r"
+            "Terminating on signal %(signal_number)r"
                 % vars())
         raise exception
 
@@ -441,7 +441,7 @@ class DaemonContext(object):
             """
         if target is None:
             result = signal.SIG_IGN
-        elif isinstance(target, basestring):
+        elif isinstance(target, str):
             name = target
             result = getattr(self, name)
         else:
@@ -468,9 +468,9 @@ def change_working_directory(directory):
         """
     try:
         os.chdir(directory)
-    except Exception, exc:
+    except Exception as exc:
         error = DaemonOSEnvironmentError(
-            u"Unable to change working directory (%(exc)s)"
+            "Unable to change working directory (%(exc)s)"
             % vars())
         raise error
 
@@ -486,9 +486,9 @@ def change_root_directory(directory):
     try:
         os.chdir(directory)
         os.chroot(directory)
-    except Exception, exc:
+    except Exception as exc:
         error = DaemonOSEnvironmentError(
-            u"Unable to change root directory (%(exc)s)"
+            "Unable to change root directory (%(exc)s)"
             % vars())
         raise error
 
@@ -498,9 +498,9 @@ def change_file_creation_mask(mask):
         """
     try:
         os.umask(mask)
-    except Exception, exc:
+    except Exception as exc:
         error = DaemonOSEnvironmentError(
-            u"Unable to change file creation mask (%(exc)s)"
+            "Unable to change file creation mask (%(exc)s)"
             % vars())
         raise error
 
@@ -516,9 +516,9 @@ def change_process_owner(uid, gid):
     try:
         os.setgid(gid)
         os.setuid(uid)
-    except Exception, exc:
+    except Exception as exc:
         error = DaemonOSEnvironmentError(
-            u"Unable to change file creation mask (%(exc)s)"
+            "Unable to change file creation mask (%(exc)s)"
             % vars())
         raise error
 
@@ -537,9 +537,9 @@ def prevent_core_dump():
         # Ensure the resource limit exists on this platform, by requesting
         # its current value
         core_limit_prev = resource.getrlimit(core_resource)
-    except ValueError, exc:
+    except ValueError as exc:
         error = DaemonOSEnvironmentError(
-            u"System does not support RLIMIT_CORE resource limit (%(exc)s)"
+            "System does not support RLIMIT_CORE resource limit (%(exc)s)"
             % vars())
         raise error
 
@@ -557,7 +557,7 @@ def detach_process_context():
         Reference: “Advanced Programming in the Unix Environment”,
         section 13.3, by W. Richard Stevens, published 1993 by
         Addison-Wesley.
-    
+
         """
 
     def fork_then_exit_parent(error_message):
@@ -571,16 +571,16 @@ def detach_process_context():
             pid = os.fork()
             if pid > 0:
                 os._exit(0)
-        except OSError, exc:
+        except OSError as exc:
             exc_errno = exc.errno
             exc_strerror = exc.strerror
             error = DaemonProcessDetachError(
-                u"%(error_message)s: [%(exc_errno)d] %(exc_strerror)s" % vars())
+                "%(error_message)s: [%(exc_errno)d] %(exc_strerror)s" % vars())
             raise error
 
-    fork_then_exit_parent(error_message=u"Failed first fork")
+    fork_then_exit_parent(error_message="Failed first fork")
     os.setsid()
-    fork_then_exit_parent(error_message=u"Failed second fork")
+    fork_then_exit_parent(error_message="Failed second fork")
 
 
 def is_process_started_by_init():
@@ -588,7 +588,7 @@ def is_process_started_by_init():
 
         The `init` process has the process ID of 1; if that is our
         parent process ID, return ``True``, otherwise ``False``.
-    
+
         """
     result = False
 
@@ -613,7 +613,7 @@ def is_socket(fd):
     try:
         socket_type = file_socket.getsockopt(
             socket.SOL_SOCKET, socket.SO_TYPE)
-    except socket.error, exc:
+    except socket.error as exc:
         exc_errno = exc.args[0]
         if exc_errno == errno.ENOTSOCK:
             # Socket operation on non-socket
@@ -635,7 +635,7 @@ def is_process_started_by_superserver():
         attaches it to the standard streams of the child process. If
         that is the case for this process, return ``True``, otherwise
         ``False``.
-    
+
         """
     result = False
 
@@ -673,14 +673,14 @@ def close_file_descriptor_if_open(fd):
         """
     try:
         os.close(fd)
-    except OSError, exc:
+    except OSError as exc:
         if exc.errno == errno.EBADF:
             # File descriptor was not open
             pass
         else:
             error = DaemonOSEnvironmentError(
-                u"Failed to close file descriptor %(fd)d"
-                u" (%(exc)s)"
+                "Failed to close file descriptor %(fd)d"
+                " (%(exc)s)"
                 % vars())
             raise error
 
@@ -742,10 +742,10 @@ def make_default_signal_map():
 
         """
     name_map = {
-        u'SIGTSTP': None,
-        u'SIGTTIN': None,
-        u'SIGTTOU': None,
-        u'SIGTERM': u'terminate',
+        'SIGTSTP': None,
+        'SIGTTIN': None,
+        'SIGTTOU': None,
+        'SIGTERM': 'terminate',
         }
     signal_map = dict(
         (getattr(signal, name), target)
